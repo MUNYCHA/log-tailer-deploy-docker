@@ -1,16 +1,23 @@
 version: "3.8"
 
 services:
-  producer:
-    image: munycha/kafka-producer:1.0.1
-    container_name: kafka-producer
+  log-tailer:
+    image: munycha/log-tailer:1.0.0
+    container_name: log-tailer
     restart: unless-stopped
 
     environment:
       TZ: Asia/Phnom_Penh
       HOST_FS: /hostfs
+      CONFIG_PATH: /config/config.json
 
     volumes:
-      - ./config:/app/config:ro
+      # JSON config (explicit, flexible)
+      - /etc/log-tailer/config.json:/config/config.json:ro
+
+      # Input logs
       - /home/kafkaproducer/test_log_file:/data/input/logs:ro
+
+      # Host FS (only if your app really needs it)
       - /:/hostfs:ro
+
